@@ -5,13 +5,13 @@ import { useState } from 'react';
 
 function App() {
 
-  const [color, setColor] = useState('gray');
+  const [style, setStyle] = useState('gray'); // For the style sheet
   const [text, setText] = useState('Click to Start Reaction Test');
-  const [text2, setText2] = useState();
-  const [statsText, setStatsText] = useState();
+  const [text2, setText2] = useState(); // For "Click to Retry" text
+  const [statsText, setStatsText] = useState(); // For the text at the top
   const [startTime, setStartTime] = useState(null);
-  const tooEarlyRef = useRef(true);
-  const restarted = useRef(false);
+  const tooEarlyRef = useRef(true); // If clicked too early
+  const restarted = useRef(false); // If the click to retry was clicked
 
   const [state, setState] = useState('Start');
   // States:
@@ -22,53 +22,59 @@ function App() {
   const handleClick = () => 
   {
     setState('Wait');
-    setColor('wait');
+    setStyle('wait');
     setText('Wait for green...');
     setText2();
     setStatsText();
     restarted.current = false;
-    const timeout = Math.floor(Math.random() * 2500) + 2000;
+    const timeout = Math.floor(Math.random() * 2500) + 2000; // Between 2 and 4.5 seconds
+    
+    // This waits timeout amount of time
     setTimeout(() => 
     {
       if (tooEarlyRef.current && !restarted.current) 
       {
         tooEarlyRef.current = false;
         setText('CLICK');
-        setColor('green');
-        setStartTime(Date.now());
+        setStyle('green');
+        setStartTime(Date.now()); // Start time here
       }
-    }, timeout); 
+    }, timeout);
   };
 
   const handleClick2 = () =>
   {
+      // If it was clicked too early
       if (tooEarlyRef.current) 
       {
         tooEarlyRef.current = false;
-        setColor('fail');
+        setStyle('fail');
         setText('TOO EARLY');
         setText2('Click to retry')
       } 
-      else
+      else // If it was not clicked too early
       {
-        const endTime = Date.now();
+        const endTime = Date.now(); // End time here
         const duration = endTime - startTime;
         setStatsText('270 ms (avg)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200 ms (Great)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;180 ms (Pro)')
-        setColor('success');
+        setStyle('success');
         setText(`${duration} ms`);
         setText2('Click to retry')
       }
+
+      // Resets variables
       setState('Start');
       restarted.current = true;
       tooEarlyRef.current = true;
       setStartTime(null);
   }
 
+  // html section
   return (
     <div className="App">
       <header className="App-header">
         <button
-          className={`color-button ${color}`}
+          className={`color-button ${style}`}
           onClick={
             state === 'Start' ? handleClick :
             handleClick2
