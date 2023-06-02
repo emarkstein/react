@@ -1,6 +1,5 @@
-import React, {useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import './App.css';
-import { useState } from 'react';
 
 
 function App() {
@@ -12,7 +11,8 @@ function App() {
   const [startTime, setStartTime] = useState(null);
   const tooEarlyRef = useRef(true); // If clicked too early
   const restarted = useRef(false); // If the click to retry was clicked
-
+  var count1 = useRef(0);
+  var count2 = useRef(0);
   const [state, setState] = useState('Start');
   // States:
   //   - Start
@@ -29,15 +29,21 @@ function App() {
     restarted.current = false;
     const timeout = Math.floor(Math.random() * 2500) + 2000; // Between 2 and 4.5 seconds
     
+
+    
     // This waits timeout amount of time
+    count1.current = count1.current + 1;
     setTimeout(() => 
     {
-      if (tooEarlyRef.current && !restarted.current) 
+      count2.current = count2.current + 1;
+      if (tooEarlyRef.current && !restarted.current && count1.current === count2.current) 
       {
         tooEarlyRef.current = false;
         setText('CLICK');
         setStyle('green');
         setStartTime(Date.now()); // Start time here
+        count1.current = 0;
+        count2.current = 0;
       }
     }, timeout);
   };
@@ -61,21 +67,18 @@ function App() {
         setText(`${duration} ms`);
         setText2('Click to retry')
       }
-
-      // Resets variables
       setState('Start');
       restarted.current = true;
       tooEarlyRef.current = true;
       setStartTime(null);
   }
 
-  // html section
   return (
     <div className="App">
       <header className="App-header">
         <button
           className={`color-button ${style}`}
-          onClick={
+          onMouseDown={
             state === 'Start' ? handleClick :
             handleClick2
           }
